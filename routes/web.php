@@ -26,3 +26,15 @@ Route::get('/test-guru-nilai', function () {
 Route::get('/test-siswa-nilai', function () {
     return view('siswa.nilai.index');
 });
+
+// ==========================================
+// ROUTE DUMMY UNTUK TESTING (Nabil)
+// Nanti dihapus setelah Iki setup auth
+// ==========================================
+Route::get('/login', function () {
+    return 'Halaman Login (dummy)';
+})->name('login');
+
+Route::post('/logout', function () {
+    return 'Logout (dummy)';
+})->name('logout');
