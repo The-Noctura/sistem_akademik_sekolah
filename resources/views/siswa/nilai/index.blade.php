@@ -1,8 +1,3 @@
-{{-- 
-FILE: resources/views/siswa/nilai/index.blade.php
-TUJUAN: Halaman siswa lihat nilai (VERSI MOCK)
---}}
-
 @extends('layouts.app')
 
 @section('title', 'Lihat Nilai')
@@ -13,43 +8,34 @@ TUJUAN: Halaman siswa lihat nilai (VERSI MOCK)
     <p class="text-sm text-slate-500 mt-1">Rekap nilai per mata pelajaran</p>
 </div>
 
-{{-- DATA DUMMY --}}
-@php
-    $nilaiPerMapel = [
-        (object) [
-            'mapel' => 'Matematika',
-            'nilai' => [
-                (object) ['jenis' => 'Tugas', 'nilai' => 85],
-                (object) ['jenis' => 'UTS', 'nilai' => 80],
-                (object) ['jenis' => 'UAS', 'nilai' => 90],
-            ],
-            'rata_rata' => 85
-        ],
-    ];
-@endphp
+@if (empty($mengajarData))
+    <x-card>
+        <p class="text-slate-500 text-center py-8">Belum ada nilai yang tersedia.</p>
+    </x-card>
+@else
+    @foreach($mengajarData as $data)
+    <x-card title="{{ $data['mengajar']->mapel->nama_mapel }} ({{ $data['mengajar']->kelas->nama_kelas }})" class="mb-6">
+        <x-table>
+            <x-slot:head>
+                <tr>
+                    <th class="text-left px-4 py-3 font-medium">Jenis</th>
+                    <th class="text-left px-4 py-3 font-medium">Nilai</th>
+                </tr>
+            </x-slot:head>
 
-@foreach($nilaiPerMapel as $data)
-<x-card title="{{ $data->mapel }}" class="mb-6">
-    <x-table>
-        <x-slot:head>
+            @foreach($data['nilai'] as $nilai)
             <tr>
-                <th class="text-left px-4 py-3 font-medium">Jenis</th>
-                <th class="text-left px-4 py-3 font-medium">Nilai</th>
+                <td class="px-4 py-3">{{ ucfirst($nilai->jenis) }}</td>
+                <td class="px-4 py-3 font-medium text-accent">{{ $nilai->nilai }}</td>
             </tr>
-        </x-slot:head>
+            @endforeach
 
-        @foreach($data->nilai as $item)
-        <tr>
-            <td class="px-4 py-3">{{ $item->jenis }}</td>
-            <td class="px-4 py-3 font-medium text-accent">{{ $item->nilai }}</td>
-        </tr>
-        @endforeach
-
-        <tr class="bg-surface font-medium">
-            <td class="px-4 py-3">Rata-rata</td>
-            <td class="px-4 py-3 text-accent">{{ $data->rata_rata }}</td>
-        </tr>
-    </x-table>
-</x-card>
-@endforeach
+            <tr class="bg-surface font-medium">
+                <td class="px-4 py-3">Rata-rata</td>
+                <td class="px-4 py-3 text-accent">{{ $data['rata_rata'] }} <x-badge variant="default">{{ $data['predikat'] }}</x-badge></td>
+            </tr>
+        </x-table>
+    </x-card>
+    @endforeach
+@endif
 @endsection

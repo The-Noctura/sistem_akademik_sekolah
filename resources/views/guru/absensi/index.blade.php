@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
-@section('title', 'Input Nilai')
+@section('title', 'Input Absensi')
 
 @section('content')
 <div class="mb-6">
-    <h1 class="text-xl font-semibold text-slate-900">Input Nilai</h1>
-    <p class="text-sm text-slate-500 mt-1">Pilih kelas dan mata pelajaran untuk menginput nilai</p>
+    <h1 class="text-xl font-semibold text-slate-900">Input Absensi</h1>
+    <p class="text-sm text-slate-500 mt-1">Pilih kelas dan mata pelajaran untuk menginput absensi</p>
 </div>
 
 @if ($mengajarList->isEmpty())
@@ -32,9 +32,9 @@
                 <td class="px-4 py-3 text-slate-500">{{ $mengajar->tahun_ajaran }}</td>
                 <td class="px-4 py-3 text-slate-500">{{ $mengajar->semester }}</td>
                 <td class="px-4 py-3">
-                    <a href="{{ route('guru.nilai.form', $mengajar->id) }}"
+                    <a href="{{ route('guru.absensi.form', $mengajar->id) }}"
                        class="text-accent hover:text-accent-hover text-sm font-medium">
-                        Input Nilai
+                        Input Absensi
                     </a>
                 </td>
             </tr>
