@@ -10,6 +10,7 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Guru\JadwalController as GuruJadwalController;
 use App\Http\Controllers\Siswa\JadwalController as SiswaJadwalController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
   return view('welcome');
@@ -27,7 +28,7 @@ Route::middleware('auth')->group(function () {
   Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
   Route::get('/dashboard', function () {
-    $user = auth()->user();
+    $user = Auth::user();
 
     if ($user && $user->role === 'admin') {
       return view('dashboard', ['role' => 'admin']);
