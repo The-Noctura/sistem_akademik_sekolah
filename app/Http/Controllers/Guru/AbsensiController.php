@@ -3,14 +3,16 @@
 namespace App\Http\Controllers\Guru;
 
 use App\Http\Controllers\Controller;
+use App\Models\Absensi;
 use App\Models\Guru;
 use App\Models\Mengajar;
 use App\Models\Siswa;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-class NilaiController extends Controller
+class AbsensiController extends Controller
 {
     public function index()
     {
@@ -20,7 +22,7 @@ class NilaiController extends Controller
             ->where('guru_id', $guru->id)
             ->get();
 
-        return view('guru.nilai.index', compact('mengajarList'));
+        return view('guru.absensi.index', compact('mengajarList'));
     }
 
     public function form($mengajarId)
@@ -31,7 +33,9 @@ class NilaiController extends Controller
 
         $siswaList = Siswa::where('kelas_id', $mengajar->kelas_id)->get();
 
-        return view('guru.nilai.form', compact('mengajar', 'siswaList'));
+        $tanggal = request()->query('tanggal', now()->format('Y-m-d'));
+
+        return view('guru.absensi.form', compact('mengajar', 'siswaList', 'tanggal'));
     }
 
     public function store(Request $request, $mengajarId)
@@ -41,12 +45,12 @@ class NilaiController extends Controller
         $this->authorizeMengajar($mengajar);
 
         $validated = $request->validate([
-            'jenis' => ['required', 'in:tugas,uts,uas'],
-            'nilai' => ['required', 'array'],
-            'nilai.*' => ['required', 'numeric', 'min:0', 'max:100'],
+            'tanggal' => ['required', 'date'],
+            'status' => ['required', 'array'],
+            'status.*' => ['required', 'in:hadir,izin,sakit,alpa'],
         ]);
 
-        $siswaIds = array_keys($validated['nilai']);
+        $siswaIds = array_keys($validated['status']);
 
         $validSiswa = Siswa::whereIn('id', $siswaIds)
             ->where('kelas_id', $mengajar->kelas_id)
@@ -56,30 +60,43 @@ class NilaiController extends Controller
         $invalidSiswa = array_diff($siswaIds, $validSiswa);
         if (! empty($invalidSiswa)) {
             return back()->withErrors([
-                'nilai' => 'Beberapa siswa tidak terdaftar di kelas ini.',
+                'status' => 'Beberapa siswa tidak terdaftar di kelas ini.',
             ])->withInput();
         }
 
         try {
             DB::beginTransaction();
 
-            foreach ($validated['nilai'] as $siswaId => $nilaiValue) {
-                DB::statement(
-                    'CALL sp_input_nilai_kelas(?, ?, ?, ?, ?)',
-                    [$mengajarId, $validated['jenis'], $siswaId, $nilaiValue, Auth::id()]
-                );
+            foreach ($validated['status'] as $siswaId => $status) {
+                Absensi::create([
+                    'siswa_id' => $siswaId,
+                    'mengajar_id' => $mengajarId,
+                    'tanggal' => $validated['tanggal'],
+                    'status' => $status,
+                ]);
             }
 
             DB::commit();
 
             return redirect()
-                ->route('guru.nilai.form', $mengajarId)
-                ->with('success', 'Nilai berhasil disimpan.');
+                ->route('guru.absensi.form', [$mengajarId, 'tanggal' => $validated['tanggal']])
+                ->with('success', 'Absensi berhasil disimpan.');
+        } catch (QueryException $e) {
+            DB::rollBack();
+            if ($e->getCode() === '23000') {
+                return back()->withErrors([
+                    'error' => 'Absensi untuk tanggal ini sudah ada. Gunakan form yang sama untuk memperbarui.',
+                ])->withInput();
+            }
+
+            return back()->withErrors([
+                'error' => 'Gagal menyimpan absensi: '.$e->getMessage(),
+            ])->withInput();
         } catch (\Exception $e) {
             DB::rollBack();
 
             return back()->withErrors([
-                'error' => 'Gagal menyimpan nilai: '.$e->getMessage(),
+                'error' => 'Gagal menyimpan absensi: '.$e->getMessage(),
             ])->withInput();
         }
     }

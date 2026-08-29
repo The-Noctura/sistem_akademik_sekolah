@@ -4,60 +4,64 @@ namespace App\Http\Controllers\Siswa;
 
 use App\Http\Controllers\Controller;
 use App\Models\Nilai;
-use App\Models\Jadwal;
-use Illuminate\Http\Request;
+use App\Models\RekapNilai;
+use App\Models\Siswa;
 use Illuminate\Support\Facades\Auth;
 
 class NilaiController extends Controller
 {
-    /**
-     * Tampilkan daftar nilai siswa yang sedang login.
-     */
     public function index()
     {
-        // Ambil ID siswa yang sedang login
-        $siswaId = Auth::id();
+        $siswa = Siswa::where('user_id', Auth::id())->firstOrFail();
 
-        // Ambil semua nilai milik siswa tersebut, lengkap dengan relasi mata pelajaran
-        $nilai = Nilai::with('mataPelajaran')
-                      ->where('siswa_id', $siswaId)
-                      ->get();
+        $nilaiPerMengajar = Nilai::with(['mengajar.mapel', 'mengajar.kelas'])
+            ->where('siswa_id', $siswa->id)
+            ->get()
+            ->groupBy('mengajar_id');
 
-        return view('siswa.nilai.index', compact('nilai'));
+        $rekapMap = RekapNilai::where('siswa_id', $siswa->id)
+            ->get()
+            ->keyBy('mengajar_id');
+
+        $mengajarData = [];
+        foreach ($nilaiPerMengajar as $mengajarId => $nilaiList) {
+            $mengajar = $nilaiList->first()->mengajar;
+            $rekap = $rekapMap->get($mengajarId);
+
+            if ($rekap && $rekap->rata_rata !== null) {
+                $rataRata = $rekap->rata_rata;
+                $predikat = $rekap->predikat;
+            } else {
+                $rataRata = $nilaiList->avg('nilai');
+                $predikat = $this->predikatDariRata($rataRata);
+            }
+
+            $mengajarData[] = [
+                'mengajar' => $mengajar,
+                'nilai' => $nilaiList,
+                'rata_rata' => round($rataRata, 2),
+                'predikat' => $predikat,
+            ];
+        }
+
+        return view('siswa.nilai.index', compact('mengajarData'));
     }
 
-    /**
-     * Tampilkan detail satu nilai (hanya jika milik siswa yang login).
-     */
-    public function show($id)
+    private function predikatDariRata($rataRata): string
     {
-        $siswaId = Auth::id();
+        if ($rataRata >= 85) {
+            return 'A';
+        }
+        if ($rataRata >= 75) {
+            return 'B';
+        }
+        if ($rataRata >= 65) {
+            return 'C';
+        }
+        if ($rataRata >= 55) {
+            return 'D';
+        }
 
-        // Cari nilai, pastikan dimiliki oleh siswa yang login
-        $nilai = Nilai::with('mataPelajaran')
-                      ->where('id', $id)
-                      ->where('siswa_id', $siswaId)
-                      ->firstOrFail();
-
-        return view('siswa.nilai.show', compact('nilai'));
-    }
-
-    /**
-     * Tampilkan rekap nilai (opsional).
-     * Bisa menampilkan rata-rata atau total nilai per semester.
-     */
-    public function rekap()
-    {
-        $siswaId = Auth::id();
-
-        $nilai = Nilai::where('siswa_id', $siswaId)->get();
-
-        // Contoh: rata-rata semua nilai
-        $rataRata = $nilai->avg('nilai');
-
-        // Kelompokkan berdasarkan mata pelajaran atau semester (jika ada)
-        // Sesuaikan dengan kebutuhan
-
-        return view('siswa.nilai.rekap', compact('nilai', 'rataRata'));
+        return 'E';
     }
 }
