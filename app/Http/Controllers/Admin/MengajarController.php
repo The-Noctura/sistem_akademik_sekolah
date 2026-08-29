@@ -12,65 +12,65 @@ use Illuminate\Support\Facades\Redirect;
 
 class MengajarController extends Controller
 {
-  public function index()
-  {
-    $mengajarList = Mengajar::with(['guru', 'mapel', 'kelas'])->latest()->get();
+    public function index()
+    {
+        $mengajarList = Mengajar::with(['guru', 'mapel', 'kelas'])->latest()->get();
 
-    return view('admin.mengajar.index', compact('mengajarList'));
-  }
+        return view('admin.mengajar.index', compact('mengajarList'));
+    }
 
-  public function create()
-  {
-    $guruList = Guru::orderBy('nama')->get();
-    $mapelList = Mapel::orderBy('nama_mapel')->get();
-    $kelasList = Kelas::orderBy('nama_kelas')->get();
+    public function create()
+    {
+        $guruList = Guru::orderBy('nama')->get();
+        $mapelList = Mapel::orderBy('nama_mapel')->get();
+        $kelasList = Kelas::orderBy('nama_kelas')->get();
 
-    return view('admin.mengajar.create', compact('guruList', 'mapelList', 'kelasList'));
-  }
+        return view('admin.mengajar.create', compact('guruList', 'mapelList', 'kelasList'));
+    }
 
-  public function store(Request $request)
-  {
-    $validated = $request->validate([
-      'guru_id' => ['required', 'exists:guru,id'],
-      'mapel_id' => ['required', 'exists:mapel,id'],
-      'kelas_id' => ['required', 'exists:kelas,id'],
-      'tahun_ajaran' => ['required', 'string', 'max:255'],
-      'semester' => ['required', 'string', 'max:255'],
-    ]);
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'guru_id' => ['required', 'exists:guru,id'],
+            'mapel_id' => ['required', 'exists:mapel,id'],
+            'kelas_id' => ['required', 'exists:kelas,id'],
+            'tahun_ajaran' => ['required', 'string', 'max:255'],
+            'semester' => ['required', 'string', 'max:255'],
+        ]);
 
-    Mengajar::create($validated);
+        Mengajar::create($validated);
 
-    return Redirect::route('admin.mengajar.index')->with('success', 'Data mengajar berhasil ditambahkan.');
-  }
+        return Redirect::route('admin.mengajar.index')->with('success', 'Data mengajar berhasil ditambahkan.');
+    }
 
-  public function edit(Mengajar $mengajar)
-  {
-    $guruList = Guru::orderBy('nama')->get();
-    $mapelList = Mapel::orderBy('nama_mapel')->get();
-    $kelasList = Kelas::orderBy('nama_kelas')->get();
+    public function edit(Mengajar $mengajar)
+    {
+        $guruList = Guru::orderBy('nama')->get();
+        $mapelList = Mapel::orderBy('nama_mapel')->get();
+        $kelasList = Kelas::orderBy('nama_kelas')->get();
 
-    return view('admin.mengajar.edit', compact('mengajar', 'guruList', 'mapelList', 'kelasList'));
-  }
+        return view('admin.mengajar.edit', compact('mengajar', 'guruList', 'mapelList', 'kelasList'));
+    }
 
-  public function update(Request $request, Mengajar $mengajar)
-  {
-    $validated = $request->validate([
-      'guru_id' => ['required', 'exists:guru,id'],
-      'mapel_id' => ['required', 'exists:mapel,id'],
-      'kelas_id' => ['required', 'exists:kelas,id'],
-      'tahun_ajaran' => ['required', 'string', 'max:255'],
-      'semester' => ['required', 'string', 'max:255'],
-    ]);
+    public function update(Request $request, Mengajar $mengajar)
+    {
+        $validated = $request->validate([
+            'guru_id' => ['required', 'exists:guru,id'],
+            'mapel_id' => ['required', 'exists:mapel,id'],
+            'kelas_id' => ['required', 'exists:kelas,id'],
+            'tahun_ajaran' => ['required', 'string', 'max:255'],
+            'semester' => ['required', 'string', 'max:255'],
+        ]);
 
-    $mengajar->update($validated);
+        $mengajar->update($validated);
 
-    return Redirect::route('admin.mengajar.index')->with('success', 'Data mengajar berhasil diperbarui.');
-  }
+        return Redirect::route('admin.mengajar.index')->with('success', 'Data mengajar berhasil diperbarui.');
+    }
 
-  public function destroy(Mengajar $mengajar)
-  {
-    $mengajar->delete();
+    public function destroy(Mengajar $mengajar)
+    {
+        $mengajar->delete();
 
-    return Redirect::route('admin.mengajar.index')->with('success', 'Data mengajar berhasil dihapus.');
-  }
+        return Redirect::route('admin.mengajar.index')->with('success', 'Data mengajar berhasil dihapus.');
+    }
 }

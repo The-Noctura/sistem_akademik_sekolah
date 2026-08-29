@@ -17,6 +17,4 @@ class Mapel extends Model
         'nama_mapel',
         'kode_mapel',
     ];
-
-    
 }

@@ -54,11 +54,8 @@ class Guru extends Model
         return $this->hasMany(Nilai::class, 'guru_id');
     }
 
-     public function mapel()
+    public function mapel()
     {
-        return $this->hasManyThrough(Mapel::class, Jadwal::class,'jadwal', 'guru_id', 'mata_pelajaran_id');
+        return $this->hasManyThrough(Mapel::class, Jadwal::class, 'jadwal', 'guru_id', 'mata_pelajaran_id');
     }
-
 }
-
-   

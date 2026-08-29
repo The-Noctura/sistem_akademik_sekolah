@@ -6,13 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class Kelas extends Model
 {
-  public function siswa()
-{
-    return $this->hasMany(Siswa::class);
-}
+    public function siswa()
+    {
+        return $this->hasMany(Siswa::class);
+    }
 
-public function waliKelas()
-{
-    return $this->belongsTo(Guru::class, 'wali_kelas_id');
-}
+    public function waliKelas()
+    {
+        return $this->belongsTo(Guru::class, 'wali_kelas_id');
+    }
 }
