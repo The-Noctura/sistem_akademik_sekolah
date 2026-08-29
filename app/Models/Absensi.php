@@ -5,24 +5,21 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Nilai extends Model
+class Absensi extends Model
 {
     use HasFactory;
 
-    protected $table = 'nilai';
+    protected $table = 'absensi';
 
     protected $fillable = [
         'siswa_id',
         'mengajar_id',
-        'jenis',
-        'nilai',
-        'tanggal_input',
-        'diinput_oleh',
+        'tanggal',
+        'status',
     ];
 
     protected $casts = [
-        'nilai' => 'decimal:2',
-        'tanggal_input' => 'datetime',
+        'tanggal' => 'date',
     ];
 
     public function siswa()
@@ -33,10 +30,5 @@ class Nilai extends Model
     public function mengajar()
     {
         return $this->belongsTo(Mengajar::class, 'mengajar_id');
-    }
-
-    public function diinputOleh()
-    {
-        return $this->belongsTo(User::class, 'diinput_oleh');
     }
 }
