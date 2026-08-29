@@ -1,7 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Guru\NilaiController; // Import controller Nilai
 
+
+Route::resource('nilai', NilaiController::class);
 // ==========================================
 // ROUTE 1: Halaman Utama (Welcome)
 // ==========================================
