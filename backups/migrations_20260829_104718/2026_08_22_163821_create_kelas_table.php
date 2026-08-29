@@ -12,12 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('kelas', function (Blueprint $table) {
-       $table->id();
-       $table->string('nama_kelas');
-       $table->string('tingkat');
-       $table->foreignId('wali_kelas_id')->nullable()->constrained('guru');
-       $table->string('tahun_ajaran');
-       $table->timestamps();
+            $table->id();
+            $table->string('nama_kelas');
+            $table->string('tingkat');
+            $table->foreignId('wali_kelas_id')->nullable()->constrained('guru');
+            $table->string('tahun_ajaran');
+            $table->timestamps();
         });
     }
 

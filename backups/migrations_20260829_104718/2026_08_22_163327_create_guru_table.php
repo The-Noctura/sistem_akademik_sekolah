@@ -12,12 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('guru', function (Blueprint $table) {
-     $table->id();
-     $table->foreignId('user_id')->constrained('users');
-     $table->string('nip');
-     $table->string('nama');
-     $table->string('no_hp')->nullable();
-     $table->timestamps();
+            $table->id();
+            $table->foreignId('user_id')->constrained('users');
+            $table->string('nip');
+            $table->string('nama');
+            $table->string('no_hp')->nullable();
+            $table->timestamps();
         });
     }
 
@@ -28,5 +28,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('guru');
     }
-    
 };
