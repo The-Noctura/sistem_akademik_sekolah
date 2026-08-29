@@ -6,34 +6,34 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-  /**
-   * Run the migrations.
-   */
-  public function up(): void
-  {
-    Schema::create('rekap_nilai', function (Blueprint $table) {
-      $table->id();
-      $table->foreignId('siswa_id')
-        ->constrained('siswa')
-        ->onDelete('cascade');
-      $table->foreignId('mata_pelajaran_id')
-        ->constrained('mapel')
-        ->onDelete('cascade');
-      $table->decimal('nilai_akhir', 5, 2);
-      $table->string('predikat', 10)->nullable();
-      $table->string('semester', 10);
-      $table->string('tahun_ajaran', 20);
-      $table->string('status', 20)->nullable();
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('rekap_nilai', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('siswa_id')
+                ->constrained('siswa')
+                ->onDelete('cascade');
+            $table->foreignId('mata_pelajaran_id')
+                ->constrained('mapel')
+                ->onDelete('cascade');
+            $table->decimal('nilai_akhir', 5, 2);
+            $table->string('predikat', 10)->nullable();
+            $table->string('semester', 10);
+            $table->string('tahun_ajaran', 20);
+            $table->string('status', 20)->nullable();
 
-      $table->timestamps();
-    });
-  }
+            $table->timestamps();
+        });
+    }
 
-  /**
-   * Reverse the migrations.
-   */
-  public function down(): void
-  {
-    Schema::dropIfExists('rekap_nilai');
-  }
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('rekap_nilai');
+    }
 };
