@@ -43,6 +43,11 @@ class JadwalController extends Controller
       ->with('success', 'Jadwal berhasil ditambahkan.');
   }
 
+  public function show(Jadwal $jadwal)
+  {
+    return redirect()->route('admin.jadwal.edit', $jadwal);
+  }
+
   public function edit(Jadwal $jadwal)
   {
     $mengajarList = $this->getMengajarOptions();
